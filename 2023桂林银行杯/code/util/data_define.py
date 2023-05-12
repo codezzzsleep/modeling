@@ -6,3 +6,8 @@ def get_features(idx):
                 'a47', 'a48', 'a49', 'a50', 'a51', 'a52', 'a53', 'a54']
     elif idx == 'correlation13':
         return ['a54', 'a53', 'a52', 'a50', 'a49', 'a51', 'a32', 'a29', 'a33', 'a44', 'a28', 'a34', 'a4']
+    elif idx == 'zyy':
+        return ['a1', 'a2', 'a4', 'a12', 'a17', 'a49', 'a50', 'a51', 'a25', 'a26',
+                'a54', 'a18', 'a29']
+    elif idx == 'impl15':
+        return ['a2', 'a3', 'a4', 'a8', 'a49', 'a50', 'a53', 'a54', 'a48', 'a25', 'a26', 'a28', 'a29']

@@ -1,6 +1,9 @@
-import sys
-sys.path.append(r'E:\studyCode\数模\code\util')
-import data_define
+# import sys
+
+from util.data_define import get_features
+
+# sys.path.append(r'E:\studyCode\数模\code\util')
+
 from sklearn.linear_model import LogisticRegression
 import pandas as pd
 import numpy as np
