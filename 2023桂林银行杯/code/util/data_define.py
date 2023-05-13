@@ -11,3 +11,5 @@ def get_features(idx):
                 'a54', 'a18', 'a29']
     elif idx == 'impl15':
         return ['a2', 'a3', 'a4', 'a8', 'a49', 'a50', 'a53', 'a54', 'a48', 'a25', 'a26', 'a28', 'a29']
+    elif idx == "impl12":
+        return ['a2', 'a3', 'a4', 'a8', 'a49', 'a50', 'a53', 'a54', 'a48', 'a25', 'a26']
