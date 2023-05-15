@@ -30,4 +30,4 @@ def fix_test_dataset(features):
 
 
 def get_score(acc, f1):
-    return str(acc * 0.7 + f1 * 0.3)
+    return str(acc * 0.3 + f1 * 0.7)

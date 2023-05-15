@@ -36,3 +36,4 @@ with open(path + 'score.txt', "w") as f:
     f.write("acc : " + str(acc) + '\n')
     f.write("f1 : " + str(f1) + '\n')
     f.write("score : " + get_score(acc, f1))
+print(str(train_dir) + "done!")
