@@ -14,6 +14,8 @@ def fix_train_dataset(features, label_column):
             fill_column.append(idx)
     train[fill_column] = train[fill_column].fillna(train[fill_column].median())
     return train, label
+
+
 def fix_test_dataset(features):
     test_data = pd.read_csv("../data/test.csv")
     test = test_data[features]
@@ -25,3 +27,7 @@ def fix_test_dataset(features):
             fill_column.append(idx)
     test[fill_column] = test[fill_column].fillna(test[fill_column].median())
     return test
+
+
+def get_score(acc, f1):
+    return str(acc * 0.7 + f1 * 0.3)

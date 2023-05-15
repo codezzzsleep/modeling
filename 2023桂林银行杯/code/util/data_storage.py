@@ -1,13 +1,17 @@
 import os
+
+
 def train_make_dir():
-    base = "../run/train"
+    base = "../run/train/"
     tmp = os.listdir(base)
-    path = base+str(int(tmp[len(tmp)-1])+1)
+    path = base + str(len(tmp)+1)
     os.mkdir(path)
-    return int(tmp[len(tmp)-1])+1
+    return len(tmp)+1
+
+
 def detect_make_dir():
     base = "../run/detect/"
     tmp = os.listdir(base)
-    path = base + str(int(tmp[len(tmp) - 1]) + 1)
+    path = base + str(len(tmp)+1)
     os.mkdir(path)
-    return int(tmp[len(tmp) - 1]) + 1
+    return len(tmp)+1
