@@ -3,8 +3,9 @@ import numpy as np
 from util.data_process import fix_test_dataset
 from util.data_process import fix_train_dataset
 from util.data_storage import detect_make_dir
-from sklearn import preprocessing
 from util.data_define import get_features
+
+from sklearn import preprocessing
 from sklearn import tree
 feature_select = "impl12"
 features = get_features(feature_select)
