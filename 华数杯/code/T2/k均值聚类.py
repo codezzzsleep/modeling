@@ -17,16 +17,28 @@ model.fit(data)
 
 # 获取每个样本所属的簇标签
 pred = model.labels_
+unique, counts = np.unique(pred, return_counts=True)
+
+# 根据频率排序元素
+sorted_indices = np.argsort(-counts)
+sorted_elements = unique[sorted_indices]
+
+# 创建替换字典
+replace_dict = {sorted_elements[i]: i for i in range(len(sorted_elements))}
+
+# 替换数组中的元素
+pred_replaced = np.vectorize(replace_dict.get)(pred)
+unique, counts = np.unique(pred_replaced, return_counts=True)
+
 acc_count = 0
 for i in range(len(label)):
-    if label[i] == pred[i]:
+    if label[i] == pred_replaced[i]:
         acc_count += 1
 
 print(acc_count / len(label))
+print(unique, counts)
 # 获取簇的中心点
 centroids = model.cluster_centers_
-unique_elements, counts = np.unique(pred, return_counts=True)
-print(unique_elements, counts)
 # 打印每个样本的簇标签和簇中心点
-print("样本标签:", pred[-20:])
+print("样本标签:", pred_replaced[-20:])
 print("簇中心点:", centroids)

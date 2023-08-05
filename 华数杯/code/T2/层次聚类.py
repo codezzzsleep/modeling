@@ -13,14 +13,29 @@ model = AgglomerativeClustering(n_clusters=3)
 
 # 对数据进行拟合
 pred = model.fit_predict(data)
+# 计算每个元素的频率
+unique, counts = np.unique(pred, return_counts=True)
+
+# 根据频率排序元素
+sorted_indices = np.argsort(-counts)
+sorted_elements = unique[sorted_indices]
+
+# 创建替换字典
+replace_dict = {sorted_elements[i]: i for i in range(len(sorted_elements))}
+
+# 替换数组中的元素
+pred_replaced = np.vectorize(replace_dict.get)(pred)
+unique, counts = np.unique(pred_replaced, return_counts=True)
 
 acc_count = 0
 for i in range(len(label)):
-    if label[i] == pred[i]:
+    if label[i] == pred_replaced[i]:
         acc_count += 1
 
 print(acc_count / len(label))
-unique_elements, counts = np.unique(pred, return_counts=True)
-print(unique_elements, counts)
+print(label)
+print(pred)
+print(pred_replaced)
+print(unique, counts)
 # 打印每个样本的簇标签
-print("样本标签:", pred[-20:])
+print("样本标签:", pred_replaced[-20:])
