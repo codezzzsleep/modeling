@@ -18,7 +18,7 @@ test_p = df.iloc[-20:, 6:9].to_numpy()
 # 创建PCA对象
 k = 1
 pca = PCA(n_components=k)
-
+print(X_p.shape)
 pca.fit(X_b)
 X_b_transformed = pca.transform(X_b)
 test_b_transformed = pca.transform(test_b)
@@ -27,10 +27,11 @@ pca.fit(X_p)
 X_p_transformed = pca.transform(X_p)
 test_p_transformed = pca.transform(test_p)
 
-X = np.stack((X_b_transformed, X_p_transformed))
-test = np.stack((test_b_transformed, test_p_transformed))
-print(X.shape)
-print(y.shape)
+X = np.vstack((X_b_transformed, X_p_transformed))
+X = X.reshape(390, 2)
+test = np.vstack((test_b_transformed, test_p_transformed))
+test = test.reshape(20, 2)
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=755)
 
 model = LogisticRegression()
@@ -39,7 +40,7 @@ model.fit(X_train, y_train)
 
 pred = model.predict(X_test)
 
-acc = accuracy_score(y, pred)
+acc = accuracy_score(y_test, pred)
 
 print("进行主成分分析降维后使用逻辑回归模型的精度：", acc)
 

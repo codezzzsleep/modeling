@@ -12,6 +12,8 @@ print(type_counts)
 X = df.iloc[:-20, 1:9].to_numpy()
 y = df.iloc[:-20, 9].astype(np.int32).to_numpy()
 test = df.iloc[-20:, 1:9].to_numpy()
+print(X.shape)
+print(y.shape)
 # 将数据划分为训练集和测试集
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=755)
 
