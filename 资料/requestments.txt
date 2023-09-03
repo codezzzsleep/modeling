@@ -1,6 +1,6 @@
-requestments
+# requestments
 
-```text
+
 # 安装  数据操作库
 pip install numpy
 pip install scipy
@@ -16,9 +16,7 @@ pip install tensorflow
 # 安装画图库
 pip install matplotlib
 
-# 安装工具库 超参数搜索
-pip install optuna
-# 灰色预测的库
-pip install pygrey
-```
+
+
+
 
