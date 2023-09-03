@@ -41,4 +41,3 @@
 
 5. ![image-20230814233504656](http://image.zzzsleep.icu/202308142335761.png)
 
-6. ![机器学习 (5)](http://image.zzzsleep.icu/202308221021181.png)
