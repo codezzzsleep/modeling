@@ -1,64 +1,71 @@
 import numpy as np
-from scipy.linalg import eig
+from scipy.linalg import eigh
+
 
 class LinearDiscriminantAnalysis:
-    def __init__(self, n_components=None):
-        self.n_components = n_components
-        self.w = None
-        self.class_labels = None
-        self.class_means = None
+    def __init__(self):
+        self.weights = None
 
-    def fit(self, X, y):
-        classes = np.unique(y)
+    # 计算均值向量
+    def _compute_mean_vectors(self, X, y):
+        n_classes = np.unique(y)
+        mean_vectors = []
+        for cls in n_classes:
+            mean_vectors.append(np.mean(X[y == cls], axis=0))
+
+        return np.array(mean_vectors)
+
+    # 计算类内散布矩阵和类间散布矩阵
+    def _compute_scatter_matrices(self, X, y, mean_vectors):
+        n_classes = np.unique(y)
         n_features = X.shape[1]
-        if self.n_components is None or self.n_components > len(classes) - 1:
-            self.n_components = len(classes) - 1
 
-        self.class_labels = classes
+        # 类内散布矩阵
+        S_W = np.zeros((n_features, n_features))
+        for cls, mean_vector in zip(n_classes, mean_vectors):
+            cls_scatter = np.zeros((n_features, n_features))
+            for row in X[y == cls]:
+                row, mean_vector = row.reshape(n_features, 1), mean_vector.reshape(n_features, 1)
+                cls_scatter += (row - mean_vector).dot((row - mean_vector).T)
+            S_W += cls_scatter
 
-        # 计算类别均值向量
-        class_means = []
-        for c in classes:
-            class_means.append(np.mean(X[y == c], axis=0))
-        self.class_means = np.array(class_means)
+        # 类间散布矩阵
+        overall_mean = np.mean(X, axis=0)
+        S_B = np.zeros((n_features, n_features))
+        for cls, mean_vector in zip(n_classes, mean_vectors):
+            n = X[y == cls, :].shape[0]
+            mean_vector, overall_mean = mean_vector.reshape(n_features, 1), overall_mean.reshape(n_features, 1)
+            S_B += n * (mean_vector - overall_mean).dot((mean_vector - overall_mean).T)
 
-        # 计算类内散度矩阵
-        within_scatter_matrix = np.zeros((n_features, n_features))
-        for c, class_mean in zip(classes, self.class_means):
-            class_samples = X[y == c]
-            scatter_matrix = np.cov(class_samples.T)
-            within_scatter_matrix += scatter_matrix
+        return S_W, S_B
 
-        # 计算类间散度矩阵
-        total_mean = np.mean(X, axis=0)
-        between_scatter_matrix = np.zeros((n_features, n_features))
-        for c, class_mean in zip(classes, self.class_means):
-            n_samples = X[y == c].shape[0]
-            mean_diff = (class_mean - total_mean).reshape(-1, 1)
-            between_scatter_matrix += n_samples * mean_diff.dot(mean_diff.T)
+    def fit(self, X, y, n_components=None):
+        mean_vectors = self._compute_mean_vectors(X, y)
+        S_W, S_B = self._compute_scatter_matrices(X, y, mean_vectors)
 
-        # 计算广义特征值和特征向量
-        eigenvalues, eigenvectors = eig(np.linalg.inv(within_scatter_matrix).dot(between_scatter_matrix))
+        # 计算逆矩阵和特征值、特征向量
+        inv_S_W = np.linalg.pinv(S_W)
+        eigvals, eigvecs = eigh(inv_S_W.dot(S_B))
 
-        # 选择前n_components个特征向量
-        idx = np.argsort(eigenvalues)[::-1]
-        self.w = eigenvectors[:, idx[:self.n_components]]
+        # 选择最大特征值的特征向量作为LDA子空间的基
+        idx = np.argsort(eigvals)[::-1]
+        eigvals, eigvecs = eigvals[idx], eigvecs[:, idx]
+
+        # 选择指定数量的特征向量
+        if n_components is not None:
+            eigvecs = eigvecs[:, :n_components].real
+
+        self.weights = eigvecs
+        self.class_means = mean_vectors @ self.weights
+        self.classes = np.unique(y)
+
+        return self.weights
 
     def transform(self, X):
-        if self.w is None:
-            raise ValueError("LDA has not been fitted.")
-        return X.dot(self.w)
-
-    def fit_transform(self, X, y):
-        self.fit(X, y)
-        return self.transform(X)
+        return X.dot(self.weights)
 
     def predict(self, X):
-        if self.w is None:
-            raise ValueError("LDA has not been fitted.")
-        X_proj = self.transform(X)
-        y_pred = []
-        for x in X_proj:
-            distances = [np.linalg.norm(x - class_mean) for class_mean in self.class_means]
-            y_pred.append(self.class_labels[np.argmin(distances)])
-        return np.array(y_pred)
+        X_lda = self.transform(X)
+        y_pred = np.array(
+            [self.classes[np.argmin(np.linalg.norm(self.class_means - point, axis=1))] for point in X_lda])
+        return y_pred
