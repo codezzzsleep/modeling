@@ -1,54 +1,61 @@
 import numpy as np
 
 
-def target_function(x):
-    return x ** 2
+def fitness_function(solution):
+    return np.sum(solution)
 
 
-def create_initial_population(population_size, min_value, max_value):
-    return np.random.uniform(min_value, max_value, population_size)
+def generate_population(population_size, n_genes):
+    return np.random.randint(0, 2, (population_size, n_genes))
 
 
-def selection(population, fitness_values, n_select):
-    selected_indices = np.argsort(fitness_values)[:n_select]
-    return population[selected_indices]
+def selection(population, fitness_scores, n_select):
+    idx = np.argsort(fitness_scores)[-n_select:]
+    return population[idx, :]
 
 
 def crossover(parents, n_offspring):
-    offspring = np.empty(n_offspring)
-    crossover_points = np.random.randint(0, parents.shape[1], n_offspring)
+    n_genes = parents.shape[1]
+    offspring = np.zeros((n_offspring, n_genes))
 
     for i in range(n_offspring):
-        parent1_idx = i % parents.shape[0]
-        parent2_idx = (i + 1) % parents.shape[0]
-        crossover_point = crossover_points[i]
+        r = np.random.choice(parents.shape[0], 2, replace=False)
+        parent1, parent2 = parents[r, :]
 
-        offspring[i] = np.hstack((parents[parent1_idx][:crossover_point], parents[parent2_idx][crossover_point:]))
+        crossover_point = np.random.randint(0, n_genes)
+        offspring[i, :crossover_point] = parent1[:crossover_point]
+        offspring[i, crossover_point:] = parent2[crossover_point:]
 
     return offspring
 
 
-def mutation(population, mutation_rate, min_value, max_value):
-    for i in range(population.shape[0]):
-        if np.random.rand() < mutation_rate:
-            population[i] *= np.random.uniform(min_value, max_value)
-    return population
+def mutation(offspring, mutation_rate):
+    for i in range(offspring.shape[0]):
+        for j in range(offspring.shape[1]):
+            if np.random.rand() < mutation_rate:
+                offspring[i, j] = 1 - offspring[i, j]
+    return offspring
 
 
-def genetic_algorithm(generations, population_size, n_select, n_offspring, mutation_rate, min_value=-10, max_value=10):
-    population = create_initial_population(population_size, min_value, max_value)
+def genetic_algorithm(generations, population_size, n_select, n_offspring, mutation_rate):
+    n_genes = 10
 
-    for _ in range(generations):
-        fitness_values = target_function(population)
+    population = generate_population(population_size, n_genes)
 
-        parents = selection(population, fitness_values, n_select)
+    for generation in range(generations):
+        fitness_scores = [fitness_function(solution) for solution in population]
+
+        parents = selection(population, fitness_scores, n_select)
+
         offspring = crossover(parents, n_offspring)
 
-        offspring_mutated = mutation(offspring, mutation_rate, min_value, max_value)
-        population = np.hstack((parents, offspring_mutated))
+        offspring = mutation(offspring, mutation_rate)
 
-    best_solution_index = np.argmin(target_function(population))
-    return population[best_solution_index]
+        population = np.vstack([parents, offspring])
+
+    best_solution = population[np.argmax(fitness_scores), :]
+
+    return best_solution
 
 
 if __name__ == "__main__":
@@ -56,7 +63,8 @@ if __name__ == "__main__":
     population_size = 50
     n_select = 20
     n_offspring = 30
-    mutation_rate = 0.2
+    mutation_rate = 0.05
 
     optimized_solution = genetic_algorithm(generations, population_size, n_select, n_offspring, mutation_rate)
-    print("优化后的解:", optimized_solution)
+    print("最优解：", optimized_solution)
+    print("最大适应值：", fitness_function(optimized_solution))
