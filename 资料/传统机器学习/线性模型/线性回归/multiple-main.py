@@ -1,7 +1,7 @@
 import pandas as pd
-# from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
-from detaile import LinearRegression
+# from detaile import LinearRegression
 
 # 创建示例数据
 data = {'x1': [1, 2, 3, 4, 5],
