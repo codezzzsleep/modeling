@@ -1,6 +1,8 @@
 import pandas as pd
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
+
 # from detaile import LinearRegression
 
 # 创建示例数据
@@ -21,7 +23,11 @@ model.fit(X, y)
 
 # 预测
 y_pred = model.predict(X)
+# 计算回归误差（均方误差）
+mse = mean_squared_error(y, y_pred)
 
+# 打印回归误差
+print("Mean Squared Error:", mse)
 # 可视化
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
